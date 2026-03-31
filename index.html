@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Probatorik — Dein Pr&uuml;fstein</title>
+<style>
+:root {
+  --bg: #06090f;
+  --surface: #0e1320;
+  --card: #141d30;
+  --border: #3e5080;
+  --text: #f4f6ff;
+  --text-muted: #c2cee8;
+  --text-dim: #8098b8;
+  --teal: #b8d0f8;
+  --accent: #f0d068;
+  --naehrend: #90c098;
+  --parasitaer: #e08868;
+  --warning: #e0c060;
+  --btn-text: #0a0e1a;
+  --selection: rgba(184,208,248,0.25);
+}
+:root.light {
+  --bg: #e4e8f8;
+  --surface: #ffffff;
+  --card: #d8e0f4;
+  --border: #8898cc;
+  --text: #000000;
+  --text-muted: #2c3450;
+  --text-dim: #505c80;
+  --teal: #2c4490;
+  --accent: #c8a820;
+  --naehrend: #2a8040;
+  --parasitaer: #c04030;
+  --warning: #a08010;
+  --btn-text: #ffffff;
+  --selection: rgba(44,68,144,0.15);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, 'Helvetica Neue', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 17px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+::selection { background: var(--selection); }
+
+/* Layout */
+.app { max-width: 640px; margin: 0 auto; padding: 2rem 1.5rem; min-height: 100vh; }
+
+/* Header */
+.header {
+  text-align: center;
+  padding: 3rem 0 2rem;
+}
+.header h1 {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+.header p {
+  color: var(--text-muted);
+  font-size: 1rem;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* Progress */
+.progress {
+  display: flex;
+  gap: 4px;
+  margin: 2rem 0;
+}
+.progress-dot {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--border);
+  transition: background 0.4s;
+}
+.progress-dot.done { background: var(--teal); }
+.progress-dot.active { background: var(--accent); }
+
+/* Steps */
+.step {
+  display: none;
+  animation: fadeIn 0.5s ease;
+}
+.step.active { display: block; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.step-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+.step-question {
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 0.8rem;
+}
+.step-desc {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+  line-height: 1.8;
+}
+
+/* Options */
+.options { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 2rem; }
+.option {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--text);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+.option:hover { border-color: var(--teal); }
+.option.selected { border-color: var(--teal); background: var(--selection); }
+.option-radio {
+  width: 20px; height: 20px; min-width: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  margin-top: 2px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.option.selected .option-radio { border-color: var(--teal); }
+.option.selected .option-radio::after {
+  content: '';
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--teal);
+}
+.option-text strong { display: block; margin-bottom: 0.2rem; }
+.option-text small { color: var(--text-dim); font-size: 0.85rem; }
+.options-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  padding: 0.8rem 0 0.2rem;
+}
+.options-label:first-child { padding-top: 0; }
+
+/* Slider */
+.slider-wrap { margin-bottom: 2rem; }
+.slider-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-bottom: 0.5rem;
+}
+.slider-value {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--teal);
+  margin-bottom: 0.5rem;
+}
+input[type="range"] {
+  width: 100%;
+  -webkit-appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border);
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--teal);
+  cursor: pointer;
+}
+
+/* Hint box */
+.hint {
+  background: rgba(240,208,104,0.08);
+  border: 1px solid rgba(240,208,104,0.15);
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 2rem;
+  font-size: 0.9rem;
+  color: var(--accent);
+  line-height: 1.7;
+}
+.hint strong { display: block; margin-bottom: 0.3rem; }
+:root.light .hint {
+  color: #5a4500;
+  background: rgba(160,120,0,0.08);
+  border-color: rgba(160,120,0,0.22);
+}
+
+/* Buttons */
+.btn-row { display: flex; gap: 0.8rem; margin-top: 1.5rem; }
+.btn {
+  flex: 1;
+  padding: 0.9rem 1.5rem;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn:hover { border-color: var(--text-muted); color: var(--text); }
+.btn-primary {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: var(--btn-text);
+}
+.btn-primary:hover { opacity: 0.85; }
+.btn-primary:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* Result */
+.result { display: none; }
+.result.active { display: block; }
+.result-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 1.2rem;
+}
+.result-section h3 {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 0.8rem;
+}
+.result-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.result-item:last-child { border-bottom: none; }
+.result-name { font-weight: 600; }
+.result-config { color: var(--text-dim); font-size: 0.85rem; text-align: right; }
+.result-badge {
+  display: inline-block;
+  padding: 0.2em 0.7em;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.badge-open { background: color-mix(in srgb, var(--naehrend) 15%, transparent); color: var(--naehrend); }
+.badge-regulate { background: color-mix(in srgb, var(--teal) 15%, transparent); color: var(--teal); }
+.badge-caution { background: color-mix(in srgb, var(--warning) 15%, transparent); color: var(--warning); }
+.badge-avoid { background: color-mix(in srgb, var(--parasitaer) 15%, transparent); color: var(--parasitaer); }
+
+.result-warning {
+  background: color-mix(in srgb, var(--parasitaer) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--parasitaer) 20%, transparent);
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--parasitaer);
+  line-height: 1.7;
+}
+
+.result-export {
+  text-align: center;
+  margin-top: 2rem;
+  padding: 2rem 0;
+}
+
+/* Top controls */
+.top-controls {
+  position: fixed;
+  top: 1.2rem;
+  right: 1.2rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 100;
+}
+.top-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: all 0.3s;
+}
+.top-btn:hover { border-color: var(--teal); color: var(--text); }
+.lang-toggle {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+.theme-toggle .icon-sun { display: none; }
+.theme-toggle .icon-moon { display: block; }
+:root.light .theme-toggle .icon-sun { display: block; }
+:root.light .theme-toggle .icon-moon { display: none; }
+
+/* Footer */
+.foot {
+  text-align: center;
+  padding: 3rem 0 2rem;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+</style>
+</head>
+<body>
+<div class="top-controls">
+  <button class="top-btn lang-toggle" onclick="toggleLang()" aria-label="Switch language" id="langBtn">EN</button>
+  <button class="top-btn theme-toggle" onclick="toggleTheme()" aria-label="Farbmodus wechseln">
+    <span class="icon-moon">&#9790;</span>
+    <span class="icon-sun">&#9728;</span>
+  </button>
+</div>
+<div class="app">
+
+<div class="header">
+  <h1>Probatorik</h1>
+  <p data-i18n="header_sub"></p>
+</div>
+
+<div class="progress" id="progress"></div>
+
+<!-- ====== STEP 1: NERVENSYSTEM ====== -->
+<div class="step" id="step-1" data-step="1">
+  <div class="step-tag" data-i18n="s1_tag"></div>
+  <div class="step-question" data-i18n="s1_q"></div>
+  <div class="step-desc" data-i18n="s1_desc"></div>
+  <div class="options" data-key="nervensystem">
+    <button class="option" data-value="ueberreizt">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s1_o1"></strong><small data-i18n="s1_o1d"></small></div>
+    </button>
+    <button class="option" data-value="starre">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s1_o2"></strong><small data-i18n="s1_o2d"></small></div>
+    </button>
+    <button class="option" data-value="wechselnd">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s1_o3"></strong><small data-i18n="s1_o3d"></small></div>
+    </button>
+    <button class="option" data-value="reguliert">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s1_o4"></strong><small data-i18n="s1_o4d"></small></div>
+    </button>
+  </div>
+  <div class="hint" data-i18n-html="s1_hint"></div>
+  <div class="btn-row">
+    <button class="btn btn-primary" disabled onclick="nextStep()" data-i18n="btn_next"></button>
+  </div>
+</div>
+
+<!-- ====== STEP 2: ZIEL ====== -->
+<div class="step" id="step-2" data-step="2">
+  <div class="step-tag" data-i18n="s2_tag"></div>
+  <div class="step-question" data-i18n="s2_q"></div>
+  <div class="step-desc" data-i18n="s2_desc"></div>
+  <div class="options" data-key="ziel">
+    <button class="option" data-value="innen">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s2_o1"></strong><small data-i18n="s2_o1d"></small></div>
+    </button>
+    <button class="option" data-value="regulation">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s2_o2"></strong><small data-i18n="s2_o2d"></small></div>
+    </button>
+    <button class="option" data-value="kreativ">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s2_o3"></strong><small data-i18n="s2_o3d"></small></div>
+    </button>
+    <button class="option" data-value="alles">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s2_o4"></strong><small data-i18n="s2_o4d"></small></div>
+    </button>
+  </div>
+  <div class="btn-row">
+    <button class="btn" onclick="prevStep()" data-i18n="btn_back"></button>
+    <button class="btn btn-primary" disabled onclick="nextStep()" data-i18n="btn_next"></button>
+  </div>
+</div>
+
+<!-- ====== STEP 3: SCHAM ====== -->
+<div class="step" id="step-3" data-step="3">
+  <div class="step-tag" data-i18n="s3_tag"></div>
+  <div class="step-question" data-i18n="s3_q"></div>
+  <div class="step-desc" data-i18n="s3_desc"></div>
+  <div class="slider-wrap">
+    <div class="slider-value" id="schamVal">5</div>
+    <input type="range" min="0" max="10" value="5" id="schamSlider" oninput="updateSlider('scham')">
+    <div class="slider-label"><span data-i18n="s3_low"></span><span data-i18n="s3_high"></span></div>
+  </div>
+  <div class="hint" data-i18n-html="s3_hint"></div>
+  <div class="btn-row">
+    <button class="btn" onclick="prevStep()" data-i18n="btn_back"></button>
+    <button class="btn btn-primary" onclick="nextStep()" data-i18n="btn_next"></button>
+  </div>
+</div>
+
+<!-- ====== STEP 4: SUCHT ====== -->
+<div class="step" id="step-4" data-step="4">
+  <div class="step-tag" data-i18n="s4_tag"></div>
+  <div class="step-question" data-i18n="s4_q"></div>
+  <div class="step-desc" data-i18n="s4_desc"></div>
+  <div class="options" data-key="sucht">
+    <button class="option" data-value="keine">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s4_o1"></strong><small data-i18n="s4_o1d"></small></div>
+    </button>
+    <button class="option" data-value="substanz">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s4_o2"></strong><small data-i18n="s4_o2d"></small></div>
+    </button>
+    <button class="option" data-value="verhalten">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s4_o3"></strong><small data-i18n="s4_o3d"></small></div>
+    </button>
+    <button class="option" data-value="beides">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s4_o4"></strong><small data-i18n="s4_o4d"></small></div>
+    </button>
+  </div>
+  <div class="btn-row">
+    <button class="btn" onclick="prevStep()" data-i18n="btn_back"></button>
+    <button class="btn btn-primary" disabled onclick="nextStep()" data-i18n="btn_next"></button>
+  </div>
+</div>
+
+<!-- ====== STEP 5: ERFAHRUNG ====== -->
+<div class="step" id="step-5" data-step="5">
+  <div class="step-tag" data-i18n="s5_tag"></div>
+  <div class="step-question" data-i18n="s5_q"></div>
+  <div class="step-desc" data-i18n="s5_desc"></div>
+  <div class="options multi" data-key="erfahrung">
+    <div class="options-label" data-i18n="s5_label_open"></div>
+    <button class="option" data-value="cannabis"><div class="option-radio"></div><div class="option-text"><strong>Cannabis</strong></div></button>
+    <button class="option" data-value="psilocybin"><div class="option-radio"></div><div class="option-text"><strong data-i18n="s5_psi"></strong></div></button>
+    <button class="option" data-value="lsd"><div class="option-radio"></div><div class="option-text"><strong>LSD</strong></div></button>
+    <button class="option" data-value="mdma"><div class="option-radio"></div><div class="option-text"><strong>MDMA</strong></div></button>
+    <button class="option" data-value="ketamin"><div class="option-radio"></div><div class="option-text"><strong data-i18n="s5_ket"></strong></div></button>
+    <button class="option" data-value="iboga"><div class="option-radio"></div><div class="option-text"><strong>Iboga / Ibogain</strong></div></button>
+    <button class="option" data-value="dmt"><div class="option-radio"></div><div class="option-text"><strong>DMT / Ayahuasca</strong></div></button>
+    <button class="option" data-value="mescalin"><div class="option-radio"></div><div class="option-text"><strong data-i18n="s5_mesc"></strong></div></button>
+    <button class="option" data-value="2cb"><div class="option-radio"></div><div class="option-text"><strong>2C-B</strong></div></button>
+    <div class="options-label" data-i18n="s5_label_close"></div>
+    <button class="option" data-value="alkohol"><div class="option-radio"></div><div class="option-text"><strong data-i18n="s5_alk"></strong></div></button>
+    <button class="option" data-value="nikotin"><div class="option-radio"></div><div class="option-text"><strong data-i18n="s5_nik"></strong></div></button>
+    <button class="option" data-value="kokain"><div class="option-radio"></div><div class="option-text"><strong data-i18n="s5_kok"></strong></div></button>
+    <button class="option" data-value="amphetamin"><div class="option-radio"></div><div class="option-text"><strong data-i18n="s5_amph"></strong></div></button>
+    <button class="option" data-value="opioide"><div class="option-radio"></div><div class="option-text"><strong data-i18n="s5_opi"></strong></div></button>
+    <button class="option" data-value="benzos"><div class="option-radio"></div><div class="option-text"><strong data-i18n="s5_benz"></strong></div></button>
+    <button class="option" data-value="keine"><div class="option-radio"></div><div class="option-text"><strong data-i18n="s5_none"></strong></div></button>
+  </div>
+  <div class="btn-row">
+    <button class="btn" onclick="prevStep()" data-i18n="btn_back"></button>
+    <button class="btn btn-primary" onclick="nextStep()" data-i18n="btn_next"></button>
+  </div>
+</div>
+
+<!-- ====== STEP 6: BASELINE HEUTE ====== -->
+<div class="step" id="step-6" data-step="6">
+  <div class="step-tag" data-i18n="s6_tag"></div>
+  <div class="step-question" data-i18n="s6_q"></div>
+  <div class="step-desc" data-i18n="s6_desc"></div>
+
+  <div class="slider-wrap">
+    <div class="slider-label"><span data-i18n="s6_head"></span><span id="kopfVal">5</span></div>
+    <input type="range" min="0" max="10" value="5" id="kopfSlider" oninput="document.getElementById('kopfVal').textContent=this.value">
+    <div class="slider-label"><span data-i18n="s6_head_low"></span><span data-i18n="s6_head_high"></span></div>
+  </div>
+
+  <div class="slider-wrap">
+    <div class="slider-label"><span data-i18n="s6_body"></span><span id="koerperVal">5</span></div>
+    <input type="range" min="0" max="10" value="5" id="koerperSlider" oninput="document.getElementById('koerperVal').textContent=this.value">
+    <div class="slider-label"><span data-i18n="s6_body_low"></span><span data-i18n="s6_body_high"></span></div>
+  </div>
+
+  <div class="slider-wrap">
+    <div class="slider-label"><span data-i18n="s6_emo"></span><span id="emotionVal">5</span></div>
+    <input type="range" min="0" max="10" value="5" id="emotionSlider" oninput="document.getElementById('emotionVal').textContent=this.value">
+    <div class="slider-label"><span data-i18n="s6_emo_low"></span><span data-i18n="s6_emo_high"></span></div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn" onclick="prevStep()" data-i18n="btn_back"></button>
+    <button class="btn btn-primary" onclick="showResult()" data-i18n="btn_result"></button>
+  </div>
+</div>
+
+<!-- ====== RESULT ====== -->
+<div class="result" id="result">
+  <div class="step-tag" data-i18n="r_tag"></div>
+  <div class="step-question" data-i18n="r_title"></div>
+  <div class="step-desc" id="resultDesc"></div>
+
+  <div id="resultContent"></div>
+
+  <div class="result-export">
+    <button class="btn btn-primary" onclick="sendResult()" data-i18n="btn_send"></button>
+  </div>
+
+  <div class="foot" data-i18n-html="footer"></div>
+</div>
+
+</div>
+
+<script>
+// ==================== i18n ====================
+const _saved = localStorage.getItem('probatorik-lang');
+let lang = _saved || ((navigator.language || 'de').toLowerCase().startsWith('de') ? 'de' : 'en');
+
+const i18n = {
+de: {
+  header_sub: '\u00d6ffnet es die T\u00fcr \u2014 oder schlie\u00dft es sie?\nFinde deine pers\u00f6nliche Konfiguration.',
+  // Step 1
+  s1_tag: '01 \u00b7 Dein System',
+  s1_q: 'Wie f\u00fchlt sich dein Nervensystem meistens an?',
+  s1_desc: 'Nicht heute \u2014 sondern im Normalzustand. Dein Default.',
+  s1_o1: '\u00dcberreizt',
+  s1_o1d: 'Zu viel Kopf, unruhig, kalter Schwei\u00df, Gedankenrasen, schwer runterzukommen',
+  s1_o2: 'Starre / Shutdown',
+  s1_o2d: 'Antriebslos, taub, abgeschnitten, nichts geht, schwer hochzukommen',
+  s1_o3: 'Wechselnd',
+  s1_o3d: 'Zwischen \u00fcberreizt und Starre, kein stabiler Zustand',
+  s1_o4: 'Meistens reguliert',
+  s1_o4d: 'Grundzustand ist okay, gelegentliche Ausschl\u00e4ge',
+  s1_hint: '<strong>Wei\u00dft du es nicht?</strong> Leg dich 5 Minuten hin, Augen zu, keine Musik. Was passiert? Gedanken rasen = \u00fcberreizt. Nichts passiert, leer = Starre. Beides abwechselnd = wechselnd.',
+  // Step 2
+  s2_tag: '02 \u00b7 Dein Ziel',
+  s2_q: 'Was willst du?',
+  s2_desc: 'Nicht was du glaubst wollen zu sollen. Was du wirklich willst.',
+  s2_o1: 'Weg nach innen',
+  s2_o1d: 'Mich sp\u00fcren, Schmerz anschauen, Bewusstsein, Tiefe',
+  s2_o2: 'Nervensystem regulieren',
+  s2_o2d: 'Runterkommen, stabilisieren, funktionieren k\u00f6nnen',
+  s2_o3: 'Sch\u00f6pferische Kraft',
+  s2_o3d: 'Kreativit\u00e4t, Muster erkennen, erschaffen, Innovator statt Operator',
+  s2_o4: 'Alles davon',
+  s2_o4d: 'Die T\u00fcr auf, das System runter, und dann bauen',
+  // Step 3
+  s3_tag: '03 \u00b7 Scham',
+  s3_q: 'Wie sehr blockiert dich Scham?',
+  s3_desc: 'Scham dar\u00fcber wer du bist, was du willst, was du brauchst. Die Scham, die verhindert dass du den Controller in die Hand nimmst.',
+  s3_low: 'Keine Scham',
+  s3_high: 'Zerst\u00f6rerisch',
+  s3_hint: '<strong>Wei\u00dft du es nicht?</strong> Sag laut: \u201eIch will Gott meines eigenen Spiels sein.\u201c Was passiert in deinem K\u00f6rper? Zusammenziehen = Scham. Nichts = kaum Scham. Tr\u00e4nen = viel.',
+  // Step 4
+  s4_tag: '04 \u00b7 Suchtmuster',
+  s4_q: 'Hast du ein aktives Suchtmuster?',
+  s4_desc: 'Nicht ob du mal was nimmst. Sondern: Gibt es etwas, das du t\u00e4glich brauchst um zu funktionieren, und das die T\u00fcr schlie\u00dft statt sie zu \u00f6ffnen?',
+  s4_o1: 'Nein',
+  s4_o1d: 'Keine aktive Abh\u00e4ngigkeit',
+  s4_o2: 'Ja, eine Substanz',
+  s4_o2d: 'Alkohol, Ketamin, Benzo, Opiat, oder anderes \u2014 t\u00e4glich oder fast t\u00e4glich',
+  s4_o3: 'Ja, ein Verhalten',
+  s4_o3d: 'Doom-Scrolling, Porn, Gaming, Arbeit \u2014 t\u00e4glich, kompulsiv',
+  s4_o4: 'Beides',
+  s4_o4d: 'Substanz und Verhalten',
+  // Step 5
+  s5_tag: '05 \u00b7 Erfahrung',
+  s5_q: 'Welche Substanzen kennst du aus eigener Erfahrung?',
+  s5_desc: 'Nur was du selbst genommen hast. Nicht was du dar\u00fcber gelesen hast.',
+  s5_label_open: '\u00d6ffnet die T\u00fcr',
+  s5_label_close: 'Schlie\u00dft die T\u00fcr',
+  s5_psi: 'Psilocybin / Pilze',
+  s5_ket: 'Ketamin',
+  s5_mesc: 'Mescalin / San Pedro',
+  s5_alk: 'Alkohol',
+  s5_nik: 'Nikotin / Zigaretten',
+  s5_kok: 'Kokain',
+  s5_amph: 'Amphetamin / Speed',
+  s5_opi: 'Opioide',
+  s5_benz: 'Benzodiazepine',
+  s5_none: 'Keine davon',
+  // Step 6
+  s6_tag: '06 \u00b7 Heute',
+  s6_q: 'Wie geht es dir jetzt gerade?',
+  s6_desc: 'K\u00f6rper scannen. Nicht denken \u2014 sp\u00fcren.',
+  s6_head: 'Kopf',
+  s6_head_low: 'Still',
+  s6_head_high: 'Laut',
+  s6_body: 'K\u00f6rper',
+  s6_body_low: 'Schwer/Starre',
+  s6_body_high: 'Unruhig/Zappelig',
+  s6_emo: 'Emotion',
+  s6_emo_low: 'Taub/Leer',
+  s6_emo_high: '\u00dcberflutet',
+  // Buttons
+  btn_next: 'Weiter',
+  btn_back: 'Zur\u00fcck',
+  btn_result: 'Ergebnis',
+  btn_send: 'Ergebnis senden',
+  // Result
+  r_tag: 'Deine Konfiguration',
+  r_title: 'Dein Pr\u00fcfstein',
+  footer: 'Probatorik v1 \u00b7 Methode: Jochen Hornung \u00b7 Die eine Frage: <em>Nimmst du es um hinzuschauen \u2014 oder um wegzuschauen?</em>',
+  // Result content
+  r_warn_sucht: 'Du hast ein aktives Suchtmuster. <strong>Entzug zuerst.</strong> Keine Substanzarbeit ohne abgeschlossenen Entzug. Das ist nicht verhandelbar.',
+  r_desc_ueberreizt: 'Dein System ist \u00fcberreizt. Du brauchst zuerst Regulation, dann \u00d6ffnung.',
+  r_desc_starre: 'Dein System ist in Starre. Du brauchst Aktivierung, bevor \u00d6ffnung m\u00f6glich ist.',
+  r_desc_wechselnd: 'Dein System schwankt. Stabilisierung ist Priorit\u00e4t.',
+  r_desc_reguliert: 'Dein System ist relativ stabil. Du kannst direkt in die \u00d6ffnung.',
+  r_h_regulation: 'Regulation \u2014 Landen',
+  r_h_oeffnung: '\u00d6ffnung \u2014 Hinschauen',
+  r_h_notaus: 'Notaus \u2014 Pause',
+  r_h_reset: 'Reset \u2014 Muster brechen',
+  r_h_regler: 'Deine vier Regler',
+  r_h_schliesst: 'Schlie\u00dft die T\u00fcr \u2014 raus',
+  // Badges
+  b_reguliert: 'Reguliert',
+  b_vermeiden: 'Vermeiden',
+  b_vorsicht: 'Vorsicht',
+  b_optional: 'Optional',
+  b_oeffnet: '\u00d6ffnet',
+  b_warten: 'Warten',
+  b_gezielt: 'Gezielt',
+  b_regel: 'Regel',
+  b_reset: 'Reset',
+  b_schliesst: 'Schlie\u00dft',
+  // Result items
+  ri_indica_low: 'Cannabis Indica (low THC)',
+  ri_indica_strains: 'Cheese, Afghan Kush, Northern Lights',
+  ri_sativa: 'Cannabis Sativa',
+  ri_sativa_nicht: 'NICHT bei \u00dcberreizung',
+  ri_sativa_mod: 'Cannabis Sativa (moderate)',
+  ri_sativa_aktiv: 'Aktiviert, holt hoch',
+  ri_indica: 'Cannabis Indica',
+  ri_indica_starre: 'Verst\u00e4rkt Starre',
+  ri_indica_opt: 'Bei Bedarf, kein Muss',
+  ri_entzug: 'Erst Entzug',
+  ri_entzug_desc: 'Keine \u00d6ffnung ohne stabiles Fundament',
+  ri_iboga: 'Iboga',
+  ri_iboga_sucht: 'Nach Entzug \u2014 resetet Suchtmuster',
+  ri_psi_lsd: 'Psilocybin / LSD',
+  ri_psi_lsd_desc: 'Nach Iboga \u2014 zeigt was darunter liegt',
+  ri_psi: 'Psilocybin',
+  ri_psi_exp: 'Erfahrung vorhanden \u2014 Mikro bis Voll',
+  ri_psi_new: 'Einsteigen mit 1.5g, Sitter dabei',
+  ri_lsd: 'LSD',
+  ri_lsd_exp: 'Erfahrung vorhanden \u2014 75\u2013200\u00b5g',
+  ri_lsd_new: 'Einsteigen mit 75\u00b5g, l\u00e4nger als Pilze (10\u201312h)',
+  ri_mdma: 'MDMA',
+  ri_mdma_scham: 'Scham-Level hoch \u2014 eine Session k\u00f6nnte die Mauer brechen',
+  ri_mdma_opt: 'Optional, max alle 3 Monate, f\u00fcr Herzarbeit',
+  ri_keta: 'Ketamin (10\u201320mg nasal)',
+  ri_keta_desc: 'System pausieren, nicht abschalten',
+  ri_keta_regel: 'Nicht t\u00e4glich',
+  ri_keta_warn: 'Reservewerkzeug \u2014 sonst wird es zum Muster',
+  ri_iboga_reset: 'EKG vorher, Sitter, 24\u201336h \u2014 kein Experiment',
+  ri_sorte: 'Sorte/Variante',
+  ri_indica_sativa: 'Indica > Sativa',
+  ri_sativa_indica: 'Sativa > Indica',
+  ri_situativ: 'Situationsabh\u00e4ngig',
+  ri_dosis: 'Dosis',
+  ri_dosis_low: 'Niedrig starten \u2014 System ist laut',
+  ri_dosis_mod: 'Moderate Einstiegsdosis m\u00f6glich',
+  ri_einnahme: 'Einnahmeweg',
+  ri_einnahme_desc: 'Vaporizer > Rauchen. Nasal f\u00fcr schnellen Onset. Oral f\u00fcr L\u00e4nge.',
+  ri_baseline: 'Baseline',
+  ri_base_unruhig: 'K\u00f6rper unruhig \u2014 erst bewegen (Bike, Laufen), dann Substanz',
+  ri_base_schwer: 'K\u00f6rper schwer \u2014 erst aktivieren',
+  ri_base_ok: 'K\u00f6rper okay \u2014 direkt m\u00f6glich',
+  ri_alkohol: 'Alkohol',
+  ri_alkohol_d: 'Bet\u00e4ubt Scham statt sie aufzul\u00f6sen',
+  ri_zigaretten: 'Zigaretten',
+  ri_zigaretten_d: 'Ablenkung, kein Zugang',
+  ri_opioide: 'Opioide',
+  ri_opioide_d: 'Bet\u00e4ubt Schmerz statt ihn anzuschauen',
+  ri_benzos: 'Benzodiazepine',
+  ri_benzos_d: 'Schaltet Angst UND Bewusstsein aus',
+  ri_kokain: 'Kokain',
+  ri_kokain_d: 'Bl\u00e4ht Ego auf, umgeht Verletzlichkeit',
+  ri_amphet: 'Amphetamin',
+  ri_amphet_d: '\u00dcberschreibt den Zustand statt ihn zu f\u00fchlen',
+  ri_keta_exp: 'Erfahrung vorhanden \u2014 10\u201320mg nasal als Notaus',
+  ri_mdma_exp: 'Erfahrung vorhanden \u2014 75\u2013100mg, max alle 3 Monate',
+  ri_closing_known: 'Du kennst diese Substanzen. Du wei\u00dft was sie machen. Die T\u00fcr bleibt zu.',
+  r_export_head: 'PROBATORIK \u2014 Pers\u00f6nliche Konfiguration',
+},
+en: {
+  header_sub: 'Does it open the door \u2014 or close it?\nFind your personal configuration.',
+  s1_tag: '01 \u00b7 Your System',
+  s1_q: 'How does your nervous system usually feel?',
+  s1_desc: 'Not today \u2014 your baseline. Your default.',
+  s1_o1: 'Overstimulated',
+  s1_o1d: 'Too much in your head, restless, cold sweat, racing thoughts, hard to come down',
+  s1_o2: 'Freeze / Shutdown',
+  s1_o2d: 'No drive, numb, disconnected, nothing moves, hard to get going',
+  s1_o3: 'Alternating',
+  s1_o3d: 'Between overstimulated and freeze, no stable state',
+  s1_o4: 'Mostly regulated',
+  s1_o4d: 'Baseline is okay, occasional swings',
+  s1_hint: '<strong>Not sure?</strong> Lie down for 5 minutes, eyes closed, no music. What happens? Thoughts racing = overstimulated. Nothing, empty = freeze. Both alternating = alternating.',
+  s2_tag: '02 \u00b7 Your Goal',
+  s2_q: 'What do you want?',
+  s2_desc: 'Not what you think you should want. What you truly want.',
+  s2_o1: 'Path inward',
+  s2_o1d: 'Feel myself, face pain, consciousness, depth',
+  s2_o2: 'Regulate nervous system',
+  s2_o2d: 'Come down, stabilize, be able to function',
+  s2_o3: 'Creative force',
+  s2_o3d: 'Creativity, pattern recognition, creation, innovator not operator',
+  s2_o4: 'All of the above',
+  s2_o4d: 'Open the door, calm the system, then build',
+  s3_tag: '03 \u00b7 Shame',
+  s3_q: 'How much does shame block you?',
+  s3_desc: 'Shame about who you are, what you want, what you need. The shame that prevents you from picking up the controller.',
+  s3_low: 'No shame',
+  s3_high: 'Destructive',
+  s3_hint: '<strong>Not sure?</strong> Say out loud: \u201cI want to be the god of my own game.\u201d What happens in your body? Contraction = shame. Nothing = little shame. Tears = a lot.',
+  s4_tag: '04 \u00b7 Addiction',
+  s4_q: 'Do you have an active addiction pattern?',
+  s4_desc: 'Not whether you use something occasionally. But: Is there something you need daily to function, that closes the door instead of opening it?',
+  s4_o1: 'No',
+  s4_o1d: 'No active dependency',
+  s4_o2: 'Yes, a substance',
+  s4_o2d: 'Alcohol, ketamine, benzo, opioid, or other \u2014 daily or almost daily',
+  s4_o3: 'Yes, a behavior',
+  s4_o3d: 'Doom-scrolling, porn, gaming, work \u2014 daily, compulsive',
+  s4_o4: 'Both',
+  s4_o4d: 'Substance and behavior',
+  s5_tag: '05 \u00b7 Experience',
+  s5_q: 'Which substances do you know from personal experience?',
+  s5_desc: 'Only what you\u2019ve taken yourself. Not what you\u2019ve read about.',
+  s5_label_open: 'Opens the door',
+  s5_label_close: 'Closes the door',
+  s5_psi: 'Psilocybin / Mushrooms',
+  s5_ket: 'Ketamine',
+  s5_mesc: 'Mescaline / San Pedro',
+  s5_alk: 'Alcohol',
+  s5_nik: 'Nicotine / Cigarettes',
+  s5_kok: 'Cocaine',
+  s5_amph: 'Amphetamine / Speed',
+  s5_opi: 'Opioids',
+  s5_benz: 'Benzodiazepines',
+  s5_none: 'None of these',
+  s6_tag: '06 \u00b7 Today',
+  s6_q: 'How are you feeling right now?',
+  s6_desc: 'Scan your body. Don\u2019t think \u2014 feel.',
+  s6_head: 'Head',
+  s6_head_low: 'Quiet',
+  s6_head_high: 'Loud',
+  s6_body: 'Body',
+  s6_body_low: 'Heavy/Freeze',
+  s6_body_high: 'Restless/Fidgety',
+  s6_emo: 'Emotion',
+  s6_emo_low: 'Numb/Empty',
+  s6_emo_high: 'Flooded',
+  btn_next: 'Next',
+  btn_back: 'Back',
+  btn_result: 'Result',
+  btn_send: 'Send result',
+  r_tag: 'Your Configuration',
+  r_title: 'Your Touchstone',
+  footer: 'Probatorik v1 \u00b7 Method: Jochen Hornung \u00b7 The one question: <em>Are you taking it to look inward \u2014 or to look away?</em>',
+  r_warn_sucht: 'You have an active addiction pattern. <strong>Detox first.</strong> No substance work without completed detox. This is non-negotiable.',
+  r_desc_ueberreizt: 'Your system is overstimulated. You need regulation first, then opening.',
+  r_desc_starre: 'Your system is in freeze. You need activation before opening is possible.',
+  r_desc_wechselnd: 'Your system fluctuates. Stabilization is the priority.',
+  r_desc_reguliert: 'Your system is relatively stable. You can go directly into opening.',
+  r_h_regulation: 'Regulation \u2014 Landing',
+  r_h_oeffnung: 'Opening \u2014 Looking inward',
+  r_h_notaus: 'Emergency stop \u2014 Pause',
+  r_h_reset: 'Reset \u2014 Breaking patterns',
+  r_h_regler: 'Your four dials',
+  r_h_schliesst: 'Closes the door \u2014 out',
+  b_reguliert: 'Regulates',
+  b_vermeiden: 'Avoid',
+  b_vorsicht: 'Caution',
+  b_optional: 'Optional',
+  b_oeffnet: 'Opens',
+  b_warten: 'Wait',
+  b_gezielt: 'Targeted',
+  b_regel: 'Rule',
+  b_reset: 'Reset',
+  b_schliesst: 'Closes',
+  ri_indica_low: 'Cannabis Indica (low THC)',
+  ri_indica_strains: 'Cheese, Afghan Kush, Northern Lights',
+  ri_sativa: 'Cannabis Sativa',
+  ri_sativa_nicht: 'NOT when overstimulated',
+  ri_sativa_mod: 'Cannabis Sativa (moderate)',
+  ri_sativa_aktiv: 'Activates, brings you up',
+  ri_indica: 'Cannabis Indica',
+  ri_indica_starre: 'Deepens freeze',
+  ri_indica_opt: 'As needed, not required',
+  ri_entzug: 'Detox first',
+  ri_entzug_desc: 'No opening without stable foundation',
+  ri_iboga: 'Iboga',
+  ri_iboga_sucht: 'After detox \u2014 resets addiction patterns',
+  ri_psi_lsd: 'Psilocybin / LSD',
+  ri_psi_lsd_desc: 'After Iboga \u2014 shows what lies beneath',
+  ri_psi: 'Psilocybin',
+  ri_psi_exp: 'Experience present \u2014 micro to full',
+  ri_psi_new: 'Start with 1.5g, sitter present',
+  ri_lsd: 'LSD',
+  ri_lsd_exp: 'Experience present \u2014 75\u2013200\u00b5g',
+  ri_lsd_new: 'Start with 75\u00b5g, longer than mushrooms (10\u201312h)',
+  ri_mdma: 'MDMA',
+  ri_mdma_scham: 'Shame level high \u2014 one session could break the wall',
+  ri_mdma_opt: 'Optional, max every 3 months, for heart work',
+  ri_keta: 'Ketamine (10\u201320mg nasal)',
+  ri_keta_desc: 'Pause the system, don\u2019t shut it down',
+  ri_keta_regel: 'Not daily',
+  ri_keta_warn: 'Emergency tool \u2014 otherwise it becomes a pattern',
+  ri_iboga_reset: 'ECG first, sitter, 24\u201336h \u2014 not an experiment',
+  ri_sorte: 'Strain/Variant',
+  ri_indica_sativa: 'Indica > Sativa',
+  ri_sativa_indica: 'Sativa > Indica',
+  ri_situativ: 'Situational',
+  ri_dosis: 'Dose',
+  ri_dosis_low: 'Start low \u2014 system is loud',
+  ri_dosis_mod: 'Moderate starting dose possible',
+  ri_einnahme: 'Route',
+  ri_einnahme_desc: 'Vaporizer > Smoking. Nasal for fast onset. Oral for duration.',
+  ri_baseline: 'Baseline',
+  ri_base_unruhig: 'Body restless \u2014 move first (bike, run), then substance',
+  ri_base_schwer: 'Body heavy \u2014 activate first',
+  ri_base_ok: 'Body okay \u2014 can go directly',
+  ri_alkohol: 'Alcohol',
+  ri_alkohol_d: 'Numbs shame instead of dissolving it',
+  ri_zigaretten: 'Cigarettes',
+  ri_zigaretten_d: 'Distraction, no access',
+  ri_opioide: 'Opioids',
+  ri_opioide_d: 'Numbs pain instead of facing it',
+  ri_benzos: 'Benzodiazepines',
+  ri_benzos_d: 'Shuts down fear AND consciousness',
+  ri_kokain: 'Cocaine',
+  ri_kokain_d: 'Inflates ego, bypasses vulnerability',
+  ri_amphet: 'Amphetamine',
+  ri_amphet_d: 'Overrides the state instead of feeling it',
+  ri_keta_exp: 'Experience present \u2014 10\u201320mg nasal as emergency stop',
+  ri_mdma_exp: 'Experience present \u2014 75\u2013100mg, max every 3 months',
+  ri_closing_known: 'You know these substances. You know what they do. The door stays closed.',
+  r_export_head: 'PROBATORIK \u2014 Personal Configuration',
+}
+};
+
+function t(key) { return i18n[lang][key] || i18n.de[key] || key; }
+
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.getElementById('langBtn').textContent = lang === 'de' ? 'EN' : 'DE';
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    el.innerHTML = t(el.dataset.i18nHtml);
+  });
+  // Re-generate result if visible
+  if (document.getElementById('result').classList.contains('active')) {
+    generateResult();
+  }
+}
+
+function toggleLang() {
+  lang = lang === 'de' ? 'en' : 'de';
+  localStorage.setItem('probatorik-lang', lang);
+  applyLang();
+}
+
+// ==================== App Logic ====================
+const TOTAL_STEPS = 6;
+let current = 1;
+const answers = {};
+
+// Init progress dots
+const progEl = document.getElementById('progress');
+for (let i = 1; i <= TOTAL_STEPS; i++) {
+  const d = document.createElement('div');
+  d.className = 'progress-dot' + (i === 1 ? ' active' : '');
+  d.dataset.step = i;
+  progEl.appendChild(d);
+}
+
+// Option click handlers
+document.querySelectorAll('.options').forEach(group => {
+  const isMulti = group.classList.contains('multi');
+  group.querySelectorAll('.option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      const key = group.dataset.key;
+      const val = opt.dataset.value;
+      if (isMulti) {
+        opt.classList.toggle('selected');
+        if (!answers[key]) answers[key] = [];
+        if (opt.classList.contains('selected')) {
+          if (val === 'keine') {
+            group.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+            opt.classList.add('selected');
+            answers[key] = ['keine'];
+          } else {
+            group.querySelector('[data-value="keine"]')?.classList.remove('selected');
+            answers[key] = answers[key].filter(v => v !== 'keine');
+            if (!answers[key].includes(val)) answers[key].push(val);
+          }
+        } else {
+          answers[key] = answers[key].filter(v => v !== val);
+        }
+      } else {
+        group.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+        answers[key] = val;
+      }
+      const step = opt.closest('.step');
+      const btn = step.querySelector('.btn-primary');
+      if (btn) btn.disabled = false;
+    });
+  });
+});
+
+function updateSlider(name) {
+  const slider = document.getElementById(name + 'Slider');
+  const val = document.getElementById(name + 'Val');
+  val.textContent = slider.value;
+  answers[name] = parseInt(slider.value);
+}
+
+function updateProgress() {
+  progEl.querySelectorAll('.progress-dot').forEach(d => {
+    const s = parseInt(d.dataset.step);
+    d.className = 'progress-dot' + (s < current ? ' done' : '') + (s === current ? ' active' : '');
+  });
+}
+
+function nextStep() {
+  document.getElementById('step-' + current).classList.remove('active');
+  current++;
+  document.getElementById('step-' + current).classList.add('active');
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function prevStep() {
+  document.getElementById('step-' + current).classList.remove('active');
+  current--;
+  document.getElementById('step-' + current).classList.add('active');
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showResult() {
+  answers.kopf = parseInt(document.getElementById('kopfSlider').value);
+  answers.koerper = parseInt(document.getElementById('koerperSlider').value);
+  answers.emotion = parseInt(document.getElementById('emotionSlider').value);
+  answers.scham = parseInt(document.getElementById('schamSlider').value);
+
+  document.getElementById('step-' + current).classList.remove('active');
+  progEl.querySelectorAll('.progress-dot').forEach(d => d.className = 'progress-dot done');
+
+  const result = document.getElementById('result');
+  result.classList.add('active');
+  generateResult();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function generateResult() {
+  const ns = answers.nervensystem;
+  const ziel = answers.ziel;
+  const scham = answers.scham || 5;
+  const sucht = answers.sucht;
+  const erf = answers.erfahrung || [];
+  const kopf = answers.kopf || 5;
+  const koerper = answers.koerper || 5;
+
+  let html = '';
+  let warnings = [];
+
+  if (sucht === 'substanz' || sucht === 'beides') {
+    warnings.push(t('r_warn_sucht'));
+  }
+
+  let desc = '';
+  if (ns === 'ueberreizt') desc = t('r_desc_ueberreizt');
+  else if (ns === 'starre') desc = t('r_desc_starre');
+  else if (ns === 'wechselnd') desc = t('r_desc_wechselnd');
+  else desc = t('r_desc_reguliert');
+  document.getElementById('resultDesc').textContent = desc;
+
+  // === REGULATION ===
+  html += '<div class="result-section"><h3>' + t('r_h_regulation') + '</h3>';
+  if (ns === 'ueberreizt' || ns === 'wechselnd') {
+    html += resultItem(t('ri_indica_low'), t('ri_indica_strains'), 'badge-regulate', t('b_reguliert'));
+    html += resultItem(t('ri_sativa'), t('ri_sativa_nicht'), 'badge-avoid', t('b_vermeiden'));
+  } else if (ns === 'starre') {
+    html += resultItem(t('ri_sativa_mod'), t('ri_sativa_aktiv'), 'badge-regulate', t('b_reguliert'));
+    html += resultItem(t('ri_indica'), t('ri_indica_starre'), 'badge-caution', t('b_vorsicht'));
+  } else {
+    html += resultItem(t('ri_indica'), t('ri_indica_opt'), 'badge-regulate', t('b_optional'));
+  }
+  html += '</div>';
+
+  // === ÖFFNUNG ===
+  html += '<div class="result-section"><h3>' + t('r_h_oeffnung') + '</h3>';
+  if (sucht === 'substanz' || sucht === 'beides') {
+    html += resultItem(t('ri_entzug'), t('ri_entzug_desc'), 'badge-avoid', t('b_warten'));
+    html += resultItem(t('ri_iboga'), t('ri_iboga_sucht'), 'badge-open', t('b_oeffnet'));
+    html += resultItem(t('ri_psi_lsd'), t('ri_psi_lsd_desc'), 'badge-open', t('b_oeffnet'));
+  } else {
+    html += resultItem(t('ri_psi'), erf.includes('psilocybin') ? t('ri_psi_exp') : t('ri_psi_new'), 'badge-open', t('b_oeffnet'));
+    html += resultItem(t('ri_lsd'), erf.includes('lsd') ? t('ri_lsd_exp') : t('ri_lsd_new'), 'badge-open', t('b_oeffnet'));
+  }
+  if (scham >= 7) {
+    html += resultItem(t('ri_mdma'), erf.includes('mdma') ? t('ri_mdma_exp') : t('ri_mdma_scham'), 'badge-open', t('b_oeffnet'));
+  } else if (scham >= 4) {
+    html += resultItem(t('ri_mdma'), erf.includes('mdma') ? t('ri_mdma_exp') : t('ri_mdma_opt'), 'badge-open', t('b_optional'));
+  }
+  html += '</div>';
+
+  // === NOTAUS ===
+  html += '<div class="result-section"><h3>' + t('r_h_notaus') + '</h3>';
+  html += resultItem(t('ri_keta'), erf.includes('ketamin') ? t('ri_keta_exp') : t('ri_keta_desc'), 'badge-caution', t('b_gezielt'));
+  html += resultItem(t('ri_keta_regel'), t('ri_keta_warn'), 'badge-avoid', t('b_regel'));
+  html += '</div>';
+
+  // === RESET ===
+  if (sucht !== 'keine' || scham >= 8) {
+    html += '<div class="result-section"><h3>' + t('r_h_reset') + '</h3>';
+    html += resultItem(t('ri_iboga'), t('ri_iboga_reset'), 'badge-open', t('b_reset'));
+    html += '</div>';
+  }
+
+  // === REGLER ===
+  html += '<div class="result-section"><h3>' + t('r_h_regler') + '</h3>';
+  html += resultItem(t('ri_sorte'), ns === 'ueberreizt' ? t('ri_indica_sativa') : ns === 'starre' ? t('ri_sativa_indica') : t('ri_situativ'), '', '');
+  html += resultItem(t('ri_dosis'), kopf >= 7 ? t('ri_dosis_low') : t('ri_dosis_mod'), '', '');
+  html += resultItem(t('ri_einnahme'), t('ri_einnahme_desc'), '', '');
+  html += resultItem(t('ri_baseline'), koerper >= 7 ? t('ri_base_unruhig') : koerper <= 3 ? t('ri_base_schwer') : t('ri_base_ok'), '', '');
+  html += '</div>';
+
+  // === NIEMALS ===
+  const closingExp = ['alkohol','nikotin','kokain','amphetamin','opioide','benzos'].filter(s => erf.includes(s));
+  html += '<div class="result-section"><h3>' + t('r_h_schliesst') + '</h3>';
+  if (closingExp.length > 0) {
+    html += '<div style="color:var(--parasitaer);font-size:0.85rem;margin-bottom:0.8rem;font-style:italic">' + t('ri_closing_known') + '</div>';
+  }
+  html += resultItem(t('ri_alkohol'), t('ri_alkohol_d'), 'badge-avoid', t('b_schliesst'));
+  html += resultItem(t('ri_zigaretten'), t('ri_zigaretten_d'), 'badge-avoid', t('b_schliesst'));
+  html += resultItem(t('ri_opioide'), t('ri_opioide_d'), 'badge-avoid', t('b_schliesst'));
+  html += resultItem(t('ri_benzos'), t('ri_benzos_d'), 'badge-avoid', t('b_schliesst'));
+  html += resultItem(t('ri_kokain'), t('ri_kokain_d'), 'badge-avoid', t('b_schliesst'));
+  html += resultItem(t('ri_amphet'), t('ri_amphet_d'), 'badge-avoid', t('b_schliesst'));
+  html += '</div>';
+
+  if (warnings.length) {
+    html += '<div class="result-warning">' + warnings.join('<br><br>') + '</div>';
+  }
+
+  document.getElementById('resultContent').innerHTML = html;
+}
+
+function resultItem(name, config, badgeClass, badgeText) {
+  return `<div class="result-item">
+    <span class="result-name">${name}</span>
+    <span class="result-config">${config}${badgeText ? ` <span class="result-badge ${badgeClass}">${badgeText}</span>` : ''}</span>
+  </div>`;
+}
+
+function sendResult() {
+  const el = document.getElementById('resultContent');
+  let text = t('r_export_head') + '\n';
+  text += document.getElementById('resultDesc').textContent + '\n\n';
+  el.querySelectorAll('.result-section').forEach(s => {
+    text += '== ' + s.querySelector('h3').textContent + ' ==\n';
+    s.querySelectorAll('.result-item').forEach(item => {
+      text += '- ' + item.querySelector('.result-name').textContent + ': ' + item.querySelector('.result-config').textContent + '\n';
+    });
+    text += '\n';
+  });
+  const subject = encodeURIComponent(t('r_export_head'));
+  const body = encodeURIComponent(text);
+  window.location.href = 'mailto:jochen.hornung@me.com?subject=' + subject + '&body=' + body;
+}
+
+// Theme toggle
+function toggleTheme() {
+  document.documentElement.classList.toggle('light');
+  localStorage.setItem('probatorik-theme',
+    document.documentElement.classList.contains('light') ? 'light' : 'dark');
+}
+// Auto-detect theme: saved preference > system/time
+const savedTheme = localStorage.getItem('probatorik-theme');
+if (savedTheme === 'light') {
+  document.documentElement.classList.add('light');
+} else if (!savedTheme) {
+  const hour = new Date().getHours();
+  if (hour >= 7 && hour < 19) document.documentElement.classList.add('light');
+}
+
+// Init
+document.getElementById('step-1').classList.add('active');
+applyLang();
+</script>
+</body>
+</html>
